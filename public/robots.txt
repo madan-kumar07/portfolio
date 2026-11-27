@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://madankumar-beyond-the-code.publicbasil6.chatgpt.site/sitemap.xml

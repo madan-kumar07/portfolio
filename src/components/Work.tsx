@@ -1,0 +1,19 @@
+import {useState} from 'react';
+import {Disc3,AudioLines,ReceiptText,GitFork,Plus,Minus,ChevronLeft,ChevronRight} from 'lucide-react';
+import {projects} from '../data/portfolio';
+function ScreenArt({music}:{music:boolean}){
+ return <div className={'monitor-art '+(music?'music-view':'order-view')} aria-hidden="true">
+  <div className="screen-bar"><span>{music?<Disc3 size={14}/>:<ReceiptText size={14}/>} {music?'TuneFlow':'Smart Canteen'}</span><i/><i/><i/></div>
+  {music?<div className="player-art"><div className="mini-vinyl"/><div className="player-copy"><small>NOW PLAYING</small><strong>Sound<br/>studies.</strong><div className="waveform">{Array.from({length:33},(_,i)=><b key={i} style={{height:(20+Math.abs(Math.sin(i*.78)*Math.cos(i*.19))*80)+'%'}}/>)}</div><AudioLines size={16}/></div></div>:
+  <div className="queue-art"><div className="order-paper"><ReceiptText size={20}/><strong>Lunch<br/>service.</strong><div className="barcode"/></div><div className="queue-copy"><small>ORDER QUEUE</small>{['Received','Preparing','Ready'].map((s,i)=><div key={s}><i/>{s}<b>0{i+1}</b></div>)}</div></div>}
+ </div>;
+}
+export function Work({selected,select,opened,open}:{selected:number,select:(i:number)=>void,opened:string,open:(s:string)=>void}){
+ const [node,setNode]=useState(0);const p=projects[selected];
+ function change(i:number){select(i);open('');setNode(0)}
+ return <section id="work" className="section signal-work"><div className="work-heading"><div><p className="small-label">Project archive</p><h2>Selected work<span>.</span></h2></div><div className="project-index" role="group" aria-label="Select project">{projects.map((project,i)=><button key={project.id} onClick={()=>change(i)} aria-pressed={selected===i}>{project.name}</button>)}</div></div>
+ <article className="project-stage" aria-label={p.name}><figure className={'monitor-space '+p.id}><div className="monitor-unit" key={p.id}><div className="monitor-shell"><ScreenArt music={selected===0}/><div className="monitor-lip"><i/><span>MK</span><b/></div></div><div className="monitor-neck"/><div className="monitor-base"/></div><figcaption>Interface study</figcaption></figure>
+ <div className="project-notes"><p className="small-label">0{selected+1} / 02 &nbsp;·&nbsp; {p.kind}</p><h3>{p.name}</h3><p>{p.intro}</p><div className="tech-line">{p.stack}</div><button className="read-case" aria-expanded={opened===p.id} aria-controls="case-file" onClick={()=>open(opened===p.id?'':p.id)}>{opened===p.id?'Close case study':'Explore case study'}{opened===p.id?<Minus size={15}/>:<Plus size={15}/>}</button><div className="work-links"><a href={p.repo}><GitFork size={14}/>Source code</a><a href={p.live}>Live demo</a></div><div className="screen-nav"><button onClick={()=>change((selected+projects.length-1)%projects.length)} aria-label="Previous project"><ChevronLeft size={18}/></button><button onClick={()=>change((selected+1)%projects.length)} aria-label="Next project"><ChevronRight size={18}/></button></div></div></article>
+ <div id="case-file" className="case-file" hidden={opened!==p.id}><div><h4>The problem</h4><p>{p.problem}</p><h4>Implementation</h4><p>{p.solution} {p.features}</p></div><div><h4>Inside the architecture</h4><div className="node-tabs">{p.nodes.map(([name],i)=><button key={name} onClick={()=>setNode(i)} aria-pressed={node===i}>{name}</button>)}</div><p aria-live="polite">{p.nodes[node][1]}</p><h4>Engineering takeaway</h4><p>{p.lesson}</p></div></div>
+ <noscript>{projects.map(q=><div key={q.id}><h3>{q.name}</h3><p>{q.intro} {q.solution}</p><a href={q.repo}>Source code</a> · <a href={q.live}>Live demo</a></div>)}</noscript></section>;
+}
